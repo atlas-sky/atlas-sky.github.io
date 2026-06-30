@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Set-inclusive uncertainty modeling for robust brain tumor segmentation under missing MRI modalities.">
+  <meta name="keywords" content="Brain Tumor Segmentation, Uncertainty Modeling, Missing Modality, BraTS, MICCAI">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <style>
+    .abstract-box {
+      background: #fafffb;
+      border-left: 4px solid rgb(97, 195, 92);
+      border-right: 4px solid rgb(97, 195, 92);
+      padding: 22px 26px;
+      border-radius: 10px;
+      line-height: 1.3;
+    }
+
+    
+    #hero-background-section {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* 슬라이드쇼 전체 컨테이너 */
+    .slideshow-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    
+    /* 각 슬라이드 공통 스타일 */
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 90%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0; /* 기본적으로는 숨김 */
+      z-index: 0;
+      animation: imageFadeInOut 25s infinite; /* 5장 x 5초 = 25초 주기 */
+    }
+    
+    /* 각 슬라이드에 시간차(Delay) 부여 
+      전체 25초 중 5초 간격으로 시작하도록 설정
+    */
+    .slide:nth-child(1) { animation-delay: 0s; }
+    .slide:nth-child(2) { animation-delay: 5s; }
+    .slide:nth-child(3) { animation-delay: 10s; }
+    .slide:nth-child(4) { animation-delay: 15s; }
+    .slide:nth-child(5) { animation-delay: 20s; }
+    
+    @keyframes imageFadeInOut {
+      0% {
+        opacity: 0;
+      }
+      /* 0초~1초 동안 나타남 */
+      4% {
+        opacity: 0.3; /* 연하게 설정 */
+      }
+      /* 1초~5초 동안 유지 (서서히 다음 장이 나타나면서 겹침) */
+      20% {
+        opacity: 0.2;
+      }
+      /* 5초~6초 동안 사라짐 */
+      24% {
+        opacity: 0.1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+    
+    /* 글자 콘텐츠가 배경 위로 올라오도록 설정 */
+    #hero-background-section .hero-body {
+      position: relative;
+      z-index: 1;
+    }
+
+
+    
+
+    .fixed-conference-logo {
+      position: fixed;
+      top: 20px;       /* 위에서부터의 거리 */
+      right: 20px;     /* 오른쪽에서부터의 거리 */
+      z-index: 1000;   /* 다른 요소보다 항상 위에 있도록 */
+      width: 150px;    /* 로고 크기 조절 */
+      pointer-events: none; /* 로고가 버튼 클릭을 방해하지 않도록 설정 (필요시 제거) */
+    }
+    
+    .fixed-conference-logo img {
+      width: 100%;
+      height: auto;
+      /* 로고도 너무 튀면 약간의 투명도를 줄 수 있습니다 */
+      opacity: 0.9;
+    }
+    
+    /* 모바일에서는 화면이 좁으므로 로고를 숨기거나 크기를 줄이는 설정 */
+    @media screen and (max-width: 768px) {
+      .fixed-conference-logo {
+        width: 80px;
+        top: 10px;
+        right: 10px;
+      }
+    }
+
+    .bibtex-header {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bibtex-header .title {
+      margin-bottom: 0;
+    }
+  </style>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/home.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+
+
+<body>
+  <div class="fixed-conference-logo">
+    <img src="./static/images/miccai2026_logo.png" alt="MICCAI 2026 Logo">
+  </div>
+  <section class="hero" id="hero-background-section">
+    <div class="slideshow-container">
+      <div class="slide" style="background-image: url('./static/images/background1.jpg');"></div>
+      <div class="slide" style="background-image: url('./static/images/background2.jpg');"></div>
+      <div class="slide" style="background-image: url('./static/images/background3.jpg');"></div>
+      <div class="slide" style="background-image: url('./static/images/background4.jpg');"></div>
+      <div class="slide" style="background-image: url('./static/images/background5.jpg');"></div>
+    </div>
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://habaek4.github.io/"><b>Seunghun Baek</b></a><sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://atlas-sky.github.io/"><b>Jihwan Park</b></a><sup>*</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=XheFLZgAAAAJ&amp;hl=ko">Jaeyoon Sim</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://mip.postech.ac.kr/members">Hoseok Lee</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://mip.postech.ac.kr/members">Seungjoo Lee</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=aWPSHNwAAAAJ&amp;hl=ko">Won Hwa Kim</a>
+            </span>
+          </div>
+
+          <p class="author-block">
+            (* : Equal Contribution)
+          </p>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">POSTECH</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <h3 class="is-size-4 publication-authors"><b>MICCAI 2026</b></h3>
+            <p class="is-size-4 publication-authors"><img class="emoji" title=":france:" alt=":france:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f1eb-1f1f7.png" height="20" width="20"> Strasbourg, France</p>
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="./static/Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/abs/2401.11840"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <span class="link-block">
+                <a href="https://github.com/atlas-sky/SIUM"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/sium_framework.png" class="center" width="100%">
+      <h2 class="subtitle has-text-centered" style="margin-top:2%">
+        <b>Overall framework of Set-Inclusive Uncertainty Modeling.</b>
+      </h2>
+    </div>
+    <hr>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <!-- <div class="column is-four-fifths"> -->
+        <div class="column is-full">
+        <h2 class="title is-3" style="margin-top:-5%">Abstract</h2>
+        <div class="content has-text-justified">
+          <div class="abstract-box">
+          Multimodal MRI is essential for accurate brain tumor segmentation, but acquiring every modality at inference time is often
+          impractical. Missing modalities introduce intrinsic uncertainty because complementary tumor evidence is no longer available.
+          We propose a probabilistic representation framework that models incomplete modality configurations as Gaussian distributions:
+          the mean captures task information, while the variance measures uncertainty from missing evidence. To make uncertainty reflect
+          information deficiency, each partial configuration is aligned toward its full-modality counterpart and its variance is scaled by
+          their discrepancy. We further introduce a set-inclusive strategy that exploits the hierarchy of modality subsets and enforces
+          consistent uncertainty ordering between subsets and supersets. Experiments on BraTS 2018 and BraTS 2020 show robust performance
+          across diverse missing-modality scenarios. Code and model checkpoint are available at
+          <a href="https://github.com/atlas-sky/SIUM">https://github.com/atlas-sky/SIUM</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Quantitative Result</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <center>
+        <img src="./static/images/sium_quantitative_results.png" class="center" width="100%">
+        </center>
+        <p>
+          <b>Tables:</b> Dice similarity coefficient (DSC, %) on BraTS 2020 and BraTS 2018, together with an ablation study on BraTS 2020.
+          The proposed method achieves the best average performance across whole tumor (WT), tumor core (TC), and enhancing tumor (ET)
+          regions, and the ablation confirms the complementary benefit of uncertainty-aware alignment and uncertainty ordering.
+        </p>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Qualitative Results</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <center>
+        <img src="./static/images/sium_qualitative_results.png" class="center" width="100%">
+        </center>
+        <p>
+          <b>Figures:</b> Qualitative results on BraTS 2020 show that our model produces more accurate and consistent segmentations
+          than RFNet and DC-Seg under different modality configurations. The uncertainty visualization shows high uncertainty within
+          tumor regions when evidence is limited, which decreases as complementary modalities are incorporated.
+        </p>
+        
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Uncertainty Analysis.</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <center>
+        <img src="./static/images/sium_uncertainty1.png" class="center" width="100%">
+        </center>
+        <p>
+          <b>Fig. 3.</b> Visualization of input modalities and ground-truth mask, with trained uncertainty overlaid on T1.
+          Uncertainty, initially higher within tumor regions, decreases as additional modalities are incorporated.
+          (Sample: <i>HG_BraTS20_Training_045</i>)
+        </p>
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <center>
+        <img src="./static/images/sium_uncertainty2.png" class="center" width="100%">
+        </center>
+        <p>
+          <b>Fig. 4.</b> Variance magnitude (&mdash;) and summed test DSC across tumor subregions (---)
+          for each modality configuration on BraTS 2020. &bull; and &#9675; indicate observed and missing
+          modalities (Flair, T1, T1c, T2). Higher uncertainty correlates with lower performance.
+          The shaded regions highlight that a superset exhibits lower uncertainty than its subset.
+        </p>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Gradient Scaling Analysis.</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <center>
+        <img src="./static/images/sium_gradient.png" class="center" width="100%">
+        </center>
+        <p class="has-text-centered">
+          <b>Fig. 5.</b> Effect of variance magnitude on gradient behavior under controlled scaling.
+        </p>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Conclusion</h2>
+    <div class="columns is-centered has-text-centered">
+      <div class="content has-text-justified">
+        <p>
+          We address intrinsic uncertainty induced by missing MRI modalities through a probabilistic framework for incomplete multimodal
+          brain tumor segmentation. By reducing reliance on unsupported cues and explicitly organizing uncertainty across modality subsets,
+          the model yields more reliable predictions. Experiments on BraTS 2018 and BraTS 2020 demonstrate robustness across missing-modality
+          scenarios, while theoretical and empirical analyses support the need for uncertainty modeling.
+        </p>
+      </div>
+    </div>
+    <hr>
+  </div>
+
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button id="copy-bibtex-button" class="button is-small is-dark" type="button">
+        <span class="icon">
+          <i class="fas fa-copy"></i>
+        </span>
+        <span>Copy</span>
+      </button>
+    </div>
+    <pre><code id="bibtex-code">@inproceedings{baek2026setinclusive,
+      title={Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation},
+      author={Baek, Seunghun and Park, Jihwan and Sim, Jaeyoon and Lee, Hoseok and Lee, Seungjoo and Kim, Won Hwa},
+      booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
+      year={2026}
+    }</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This website template was adapted from <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies website</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const copyBibTeXButton = document.getElementById('copy-bibtex-button');
+  const bibTeXCode = document.getElementById('bibtex-code');
+
+  function copyTextWithFallback(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return Promise.resolve();
+  }
+
+  if (copyBibTeXButton && bibTeXCode) {
+    copyBibTeXButton.addEventListener('click', () => {
+      copyTextWithFallback(bibTeXCode.innerText.trim()).then(() => {
+        const label = copyBibTeXButton.querySelector('span:last-child');
+        label.textContent = 'Copied!';
+        setTimeout(() => {
+          label.textContent = 'Copy';
+        }, 1600);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
